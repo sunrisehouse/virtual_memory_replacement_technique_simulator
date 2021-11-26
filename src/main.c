@@ -18,8 +18,11 @@ int main(int argc, char* argv[])
     Input input = read_input(input_file_name);
 
     #ifdef DEBUG
+    printf("\n# 2. Simulation\n");
     print_input(input);
     #endif
+
+    printf("\n[SIMULATION END]\n\n");
 
     return 0;
 }
