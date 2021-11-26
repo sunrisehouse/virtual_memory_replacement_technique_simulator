@@ -1,5 +1,5 @@
-#ifndef _INPUT_READER_HEADER_FILE
-#define _INPUT_READER_HEADER_FILE
+#ifndef __INPUT_READER_HEADER_FILE__
+#define __INPUT_READER_HEADER_FILE__
 
 #include <stdio.h>
 #include <stdlib.h>

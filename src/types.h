@@ -1,5 +1,5 @@
-#ifndef _TYPES_HEADER_FILE
-#define _TYPES_HEADER_FILE
+#ifndef __TYPES_HEADER_FILE__
+#define __TYPES_HEADER_FILE__
 
 typedef int PageId;
 
