@@ -15,13 +15,13 @@ Input read_input(char* file_name) {
         &input.number_of_page_reference
     );
 
-    input.page_references = (PageId *) malloc(sizeof(PageId) * input.number_of_page_reference);    
+    input.page_references = (int *) malloc(sizeof(int) * input.number_of_page_reference);    
 
     int index_of_page_refrence;
     for (index_of_page_refrence = 0; index_of_page_refrence < input.number_of_page_reference; index_of_page_refrence++)
     {
         fscanf(fp, "%d", &input.page_references[index_of_page_refrence]);
     }
-    
+
     return input;
 }

@@ -1,5 +1,6 @@
-#include "input_reader.h"
 #define DEBUG
+#include "input_reader.h"
+#include "simulator.h"
 
 void print_input(Input input);
 
@@ -21,6 +22,8 @@ int main(int argc, char* argv[])
     printf("\n# 2. Simulation\n");
     print_input(input);
     #endif
+
+    simulate(input);
 
     printf("\n[SIMULATION END]\n\n");
 
