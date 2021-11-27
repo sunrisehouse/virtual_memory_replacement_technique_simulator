@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
     print_input(input);
     #endif
 
-    SimulationResult* min_simulation_result = simulate(input, "FIFO");
+    SimulationResult* min_simulation_result = simulate(input, "LRU");
     print_simulation_result(*min_simulation_result);
 
     printf("\n[SIMULATION END]\n\n");

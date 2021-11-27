@@ -1,10 +1,11 @@
 #include "simulator.h"
 
+int refer_page(Memory* memory, PageMap page_map_table[], int page_index, int time);
 void assign_page(Memory* memory, PageMap page_map_table[], int page_index, int page_frame_index, int time);
 void release_page(Memory* memory, PageMap page_map_table[], int page_index, int page_frame_index);
 int _MIN_find_victim_page_frame_index(Memory memory, Input input, int current_index);
 int _FIFO_find_victim_page_frame_index(Memory memory, PageMap page_map_table[]);
-// int _LRU_find_victim_page_frame_index(int page_frames[], PageMap page_map_table[]);
+int _LRU_find_victim_page_frame_index(Memory memory, PageMap page_map_table[]);
 // int _LFU_find_victim_page_frame_index(int page_frames[], PageMap page_map_table[]);
 int _find_empty_page_frame_index(Memory memory);
 void copy_memory(Memory* target, Memory* source);
@@ -47,7 +48,7 @@ SimulationResult* simulate(Input input, const char* replacement_technique)
     {
         // _print_page_frame(memory, input.number_of_assigned_page_frame);
         int referenced_page_index = input.page_references[i];
-        int page_frame_index = page_map_table[referenced_page_index].assigned_page_frame_index;
+        int page_frame_index = refer_page(&memory, page_map_table, referenced_page_index, i);
 
         if (page_frame_index == -1)
         {
@@ -60,8 +61,8 @@ SimulationResult* simulate(Input input, const char* replacement_technique)
                 int victim_page_frame_index;
                 if (replacement_technique == "MIN") victim_page_frame_index = _MIN_find_victim_page_frame_index(memory, input, i);
                 else if (replacement_technique == "FIFO") victim_page_frame_index = _FIFO_find_victim_page_frame_index(memory, page_map_table);
-                else if (replacement_technique == "LRU") victim_page_frame_index = _MIN_find_victim_page_frame_index(memory, input, i);
-                else if (replacement_technique == "LFU") victim_page_frame_index = _MIN_find_victim_page_frame_index(memory, input, i);
+                else if (replacement_technique == "LRU") victim_page_frame_index = _LRU_find_victim_page_frame_index(memory, page_map_table);
+                else if (replacement_technique == "LFU") victim_page_frame_index = _LRU_find_victim_page_frame_index(memory, page_map_table);
                 int victim_page_index = memory.page_frames[victim_page_frame_index];
 
 
@@ -136,6 +137,25 @@ int _FIFO_find_victim_page_frame_index(Memory memory, PageMap page_map_table[])
     return min_page_frame_index;
 }
 
+int _LRU_find_victim_page_frame_index(Memory memory, PageMap page_map_table[])
+{
+    int min_reference_time = page_map_table[memory.page_frames[0]].reference_time;
+    int min_page_frame_index = 0;
+    int i;
+    for (i = 0; i < memory.number_of_page_frame; i++)
+    {
+        int page_index = memory.page_frames[i];
+
+        if (page_map_table[page_index].reference_time < min_reference_time)
+        {
+            min_reference_time = page_map_table[page_index].assigned_time;
+            min_page_frame_index = i;
+        }
+    }
+
+    return min_page_frame_index;
+}
+
 int _find_empty_page_frame_index(Memory memory)
 {
     int finded_index = -1;
@@ -172,6 +192,14 @@ void _print_page_frame(Memory memory)
         printf(" %d | ", memory.page_frames[i]);
     }
     printf("\n");
+}
+
+int refer_page(Memory* memory, PageMap page_map_table[], int page_index, int time)
+{
+    int page_frame_index = page_map_table[page_index].assigned_page_frame_index;
+    page_map_table[page_index].reference_time = time;
+
+    return page_frame_index;
 }
 
 void assign_page(Memory* memory, PageMap page_map_table[], int page_index, int page_frame_index, int time)
