@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
     print_input(input);
     #endif
 
-    simulate(input);
+    simulate(input, "MIN");
 
     printf("\n[SIMULATION END]\n\n");
 

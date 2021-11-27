@@ -4,16 +4,26 @@ int _MIN_find_victim_page_frame_index(Memory memory, Input input, int current_in
 // int _FIFO_find_victim_page_frame_index(int page_frames[], PageMap page_map_table[]);
 // int _LRU_find_victim_page_frame_index(int page_frames[], PageMap page_map_table[]);
 // int _LFU_find_victim_page_frame_index(int page_frames[], PageMap page_map_table[]);
-int _find_empty_page_frame_index(Memory memory, int number_of_page_frame);
-void _print_page_frame(Memory memory, int number_of_page_frame);
+int _find_empty_page_frame_index(Memory memory);
+void copy_memory(Memory* target, Memory* source);
+void _print_page_frame(Memory memory);
+void _print_simulation_result(SimulationResult simulation_result);
 
-void simulate(Input input)
+void simulate(Input input, const char* replacement_technique)
 {
     // result 초기화
     SimulationResult simulation_result;
     simulation_result.number_of_page_reference = input.number_of_page_reference;
     simulation_result.page_fault_history = (char *) malloc(sizeof(char) * input.number_of_page_reference);
     simulation_result.memory_history = (Memory *) malloc(sizeof(Memory) * input.number_of_page_reference);
+    simulation_result.page_references = (int *) malloc(sizeof(int) * input.number_of_page_reference);
+
+    // 초기화
+    int i;
+    for (i = 0; i < input.number_of_assigned_page_frame; i++)
+    {
+        simulation_result.page_fault_history[i] = 0;
+    }
 
     Memory memory;
     memory.number_of_page_frame = input.number_of_assigned_page_frame;
@@ -21,10 +31,8 @@ void simulate(Input input)
     PageMap page_map_table[input.number_of_page_in_process];
 
     // 초기화
-    int i;
     for (i = 0; i < input.number_of_assigned_page_frame; i++)
     {
-        memory.number_of_page_frame = input.number_of_assigned_page_frame;
         memory.page_frames[i] = -1;
     }
 
@@ -43,7 +51,7 @@ void simulate(Input input)
         if (page_frame_index == -1)
         {
             // 빈 페이지 프레임 찾기
-            int empty_page_frame_index = _find_empty_page_frame_index(memory, input.number_of_assigned_page_frame);
+            int empty_page_frame_index = _find_empty_page_frame_index(memory);
         
             if (empty_page_frame_index == -1)
             {
@@ -51,8 +59,9 @@ void simulate(Input input)
                 int victim_page_frame_index = _MIN_find_victim_page_frame_index(memory, input, i);
                 int victim_page_index = memory.page_frames[victim_page_frame_index];
 
-                memory.page_frames[victim_page_frame_index] = -1;
+                memory.page_frames[victim_page_frame_index] = referenced_page_index;
                 page_map_table[victim_page_index].assigned_page_frame_index = -1;
+                page_map_table[referenced_page_index].assigned_page_frame_index = victim_page_frame_index;
             }
             else
             {
@@ -60,6 +69,15 @@ void simulate(Input input)
                 page_map_table[referenced_page_index].assigned_page_frame_index = empty_page_frame_index;
             }    
         }
+
+        simulation_result.page_references[i] = referenced_page_index;
+        if (page_frame_index == -1)
+        {
+            simulation_result.page_fault_history[i] = 1;
+        }
+        Memory record_memory;
+        copy_memory(&record_memory, &memory);
+        simulation_result.memory_history[i] = record_memory;
     }
 }
 
@@ -93,11 +111,11 @@ int _MIN_find_victim_page_frame_index(Memory memory, Input input, int current_in
     return max_page_frame_index;
 }
 
-int _find_empty_page_frame_index(Memory memory, int number_of_page_frame)
+int _find_empty_page_frame_index(Memory memory)
 {
     int finded_index = -1;
     int i;
-    for (i = 0; i < number_of_page_frame; i++)
+    for (i = 0; i < memory.number_of_page_frame; i++)
     {
         if (memory.page_frames[i] == -1)
         {
@@ -109,12 +127,37 @@ int _find_empty_page_frame_index(Memory memory, int number_of_page_frame)
     return finded_index;
 }
 
-void _print_page_frame(Memory memory, int number_of_page_frame)
+void copy_memory(Memory* target, Memory* source)
+{
+    target->number_of_page_frame = source->number_of_page_frame;
+    target->page_frames = (int *) malloc(sizeof(int *) * source->number_of_page_frame);
+    
+    int i;
+    for (i = 0; i < source->number_of_page_frame; i++)
+    {
+        target->page_frames[i] = source->page_frames[i];
+    }
+}
+
+void _print_page_frame(Memory memory)
 {
     int i;
-    for (i = 0; i < number_of_page_frame; i++)
+    for (i = 0; i < memory.number_of_page_frame; i++)
     {
-        printf(" %d / ", memory.page_frames[i]);
+        printf(" %d | ", memory.page_frames[i]);
     }
     printf("\n");
+}
+
+void _print_simulation_result(SimulationResult simulation_result)
+{
+    int i;
+    for (i = 0; i < simulation_result.number_of_page_reference; i++)
+    {
+        printf("[%d]\n", i);
+        printf("reference: %d\n", simulation_result.page_references[i]);
+        _print_page_frame(simulation_result.memory_history[i]);
+        if (simulation_result.page_fault_history[i] == 1) printf("page fault!!\n");
+        printf("\n");
+    }
 }

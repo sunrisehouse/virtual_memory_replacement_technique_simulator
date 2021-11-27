@@ -24,6 +24,7 @@ typedef struct Memory
 typedef struct SimulationResult
 {
     int number_of_page_reference;
+    int* page_references;
     Memory* memory_history;
     char* page_fault_history;
 } SimulationResult;
