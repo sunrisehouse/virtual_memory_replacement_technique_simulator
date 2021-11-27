@@ -15,6 +15,7 @@ typedef struct PageMap
     int assigned_page_frame_index;
     int assigned_time;
     int reference_time;
+    int reference_count;
 } PageMap;
 
 typedef struct Memory

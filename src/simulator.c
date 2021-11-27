@@ -6,7 +6,7 @@ void release_page(Memory* memory, PageMap page_map_table[], int page_index, int 
 int _MIN_find_victim_page_frame_index(Memory memory, Input input, int current_index);
 int _FIFO_find_victim_page_frame_index(Memory memory, PageMap page_map_table[]);
 int _LRU_find_victim_page_frame_index(Memory memory, PageMap page_map_table[]);
-// int _LFU_find_victim_page_frame_index(int page_frames[], PageMap page_map_table[]);
+int _LFU_find_victim_page_frame_index(Memory memory, PageMap page_map_table[]);
 int _find_empty_page_frame_index(Memory memory);
 void copy_memory(Memory* target, Memory* source);
 void _print_page_frame(Memory memory);
@@ -41,6 +41,9 @@ SimulationResult* simulate(Input input, const char* replacement_technique)
     for (i = 0; i < input.number_of_page_in_process; i++)
     {
         page_map_table[i].assigned_page_frame_index = -1;
+        page_map_table[i].assigned_time = -1;
+        page_map_table[i].reference_time = -1;
+        page_map_table[i].reference_count = 0;
     }
 
     // 시뮬레이션
@@ -156,6 +159,25 @@ int _LRU_find_victim_page_frame_index(Memory memory, PageMap page_map_table[])
     return min_page_frame_index;
 }
 
+int _LFU_find_victim_page_frame_index(Memory memory, PageMap page_map_table[])
+{
+    int min_reference_count = page_map_table[memory.page_frames[0]].reference_count;
+    int min_page_frame_index = 0;
+    int i;
+    for (i = 0; i < memory.number_of_page_frame; i++)
+    {
+        int page_index = memory.page_frames[i];
+
+        if (page_map_table[page_index].reference_count < min_reference_count)
+        {
+            min_reference_count = page_map_table[page_index].reference_count;
+            min_page_frame_index = i;
+        }
+    }
+
+    return min_page_frame_index;
+}
+
 int _find_empty_page_frame_index(Memory memory)
 {
     int finded_index = -1;
@@ -198,6 +220,7 @@ int refer_page(Memory* memory, PageMap page_map_table[], int page_index, int tim
 {
     int page_frame_index = page_map_table[page_index].assigned_page_frame_index;
     page_map_table[page_index].reference_time = time;
+    page_map_table[page_index].reference_count += 1;
 
     return page_frame_index;
 }
