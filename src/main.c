@@ -26,23 +26,23 @@ int main(int argc, char* argv[])
     #endif
 
     SimulationResult* MIN_simulation_result = simulate(input, "MIN");
-    printf("\nReplacement Technique: MIN\n");
+    printf("\nMIN\n");
     print_simulation_result(*MIN_simulation_result);
 
     SimulationResult* FIFO_simulation_result = simulate(input, "FIFO");
-    printf("\nReplacement Technique: FIFO\n");
+    printf("\nFIFO\n");
     print_simulation_result(*FIFO_simulation_result);
 
     SimulationResult* LRU_simulation_result = simulate(input, "LRU");
-    printf("\nReplacement Technique: LRU\n");
+    printf("\nLRU\n");
     print_simulation_result(*LRU_simulation_result);
 
     SimulationResult* LFU_simulation_result = simulate(input, "LFU");
-    printf("\nReplacement Technique: LFU\n");
+    printf("\nLFU\n");
     print_simulation_result(*LFU_simulation_result);
 
     SimulationResult* WS_simulation_result = simulate(input, "WS");
-    printf("\nReplacement Technique: WS\n");
+    printf("\nWS\n");
     print_simulation_result(*WS_simulation_result);
 
     printf("\n[SIMULATION END]\n\n");
@@ -65,13 +65,17 @@ void print_simulation_result(SimulationResult simulation_result)
     int i;
     for (i = 0; i < simulation_result.number_of_page_reference; i++)
     {
-        printf("[%4d] ", i + 1);
-        printf("%3d ref: ", simulation_result.page_references[i]);
         if (simulation_result.page_fault_history[i] == 1)
         {
-            printf("page fault ");
             page_fault_count += 1;
         }
+    }
+    printf("page fault count: %d\n", page_fault_count);
+    for (i = 0; i < simulation_result.number_of_page_reference; i++)
+    {
+        printf("[%4d] ", i + 1);
+        printf("%3d ref: ", simulation_result.page_references[i]);
+        if (simulation_result.page_fault_history[i] == 1) printf("page fault ");
         else printf("           ");
         int j;
         for (j = 0; j < simulation_result.memory_history[i].number_of_page_frame; j++)
@@ -88,5 +92,4 @@ void print_simulation_result(SimulationResult simulation_result)
         printf("\t");
         printf("\n");
     }
-    printf("page fault count: %d\n", page_fault_count);
 }
