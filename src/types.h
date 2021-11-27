@@ -13,6 +13,7 @@ typedef struct Input
 typedef struct PageMap
 {
     int assigned_page_frame_index;
+    int assigned_time;
 } PageMap;
 
 typedef struct Memory

@@ -5,6 +5,6 @@
 #include <stdlib.h>
 #include "types.h"
 
-void simulate(Input input, const char* replacement_technique);
+SimulationResult* simulate(Input input, const char* replacement_technique);
 
 #endif

@@ -1,8 +1,10 @@
 #define DEBUG
 #include "input_reader.h"
 #include "simulator.h"
+#include "types.h"
 
 void print_input(Input input);
+void print_simulation_result(SimulationResult simulation_result);
 
 int main(int argc, char* argv[])
 {
@@ -23,7 +25,8 @@ int main(int argc, char* argv[])
     print_input(input);
     #endif
 
-    simulate(input, "MIN");
+    SimulationResult* min_simulation_result = simulate(input, "FIFO");
+    print_simulation_result(*min_simulation_result);
 
     printf("\n[SIMULATION END]\n\n");
 
@@ -37,4 +40,22 @@ void print_input(Input input)
     printf("%snumber of assigned page frame: %d\n", space, input.number_of_assigned_page_frame);
     printf("%swindow size : %d\n", space, input.window_size);
     printf("%snumber of page reference: %d\n", space, input.number_of_page_reference);
+}
+
+void print_simulation_result(SimulationResult simulation_result)
+{
+    int i;
+    for (i = 0; i < simulation_result.number_of_page_reference; i++)
+    {
+        printf("[%d]\n", i);
+        printf("reference: %d\n", simulation_result.page_references[i]);
+        int j;
+        for (j = 0; j < simulation_result.memory_history[i].number_of_page_frame; j++)
+        {
+            printf(" %d | ", simulation_result.memory_history[i].page_frames[j]);
+        }
+        printf("\n");
+        if (simulation_result.page_fault_history[i] == 1) printf("page fault!!\n");
+        printf("\n");
+    }
 }
