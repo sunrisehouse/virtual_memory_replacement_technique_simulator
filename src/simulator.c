@@ -86,7 +86,7 @@ SimulationResult* simulate(Input input, const char* replacement_technique)
                 if (replacement_technique == "MIN") victim_page_frame_index = _MIN_find_victim_page_frame_index(memory, input, i);
                 else if (replacement_technique == "FIFO") victim_page_frame_index = _FIFO_find_victim_page_frame_index(memory, page_map_table);
                 else if (replacement_technique == "LRU") victim_page_frame_index = _LRU_find_victim_page_frame_index(memory, page_map_table);
-                else if (replacement_technique == "LFU") victim_page_frame_index = _LRU_find_victim_page_frame_index(memory, page_map_table);
+                else if (replacement_technique == "LFU") victim_page_frame_index = _LFU_find_victim_page_frame_index(memory, page_map_table);
                 int victim_page_index = memory.page_frames[victim_page_frame_index];
 
 
@@ -172,7 +172,7 @@ int _LRU_find_victim_page_frame_index(Memory memory, PageMap page_map_table[])
 
         if (page_map_table[page_index].reference_time < min_reference_time)
         {
-            min_reference_time = page_map_table[page_index].assigned_time;
+            min_reference_time = page_map_table[page_index].reference_time;
             min_page_frame_index = i;
         }
     }
