@@ -1,4 +1,4 @@
-#define DEBUG
+// #define DEBUG
 #include "input_reader.h"
 #include "simulator.h"
 #include "types.h"
@@ -25,8 +25,25 @@ int main(int argc, char* argv[])
     print_input(input);
     #endif
 
-    SimulationResult* min_simulation_result = simulate(input, "LFU");
-    print_simulation_result(*min_simulation_result);
+    SimulationResult* MIN_simulation_result = simulate(input, "MIN");
+    printf("\nReplacement Technique: MIN\n");
+    print_simulation_result(*MIN_simulation_result);
+
+    SimulationResult* FIFO_simulation_result = simulate(input, "FIFO");
+    printf("\nReplacement Technique: FIFO\n");
+    print_simulation_result(*FIFO_simulation_result);
+
+    SimulationResult* LRU_simulation_result = simulate(input, "LRU");
+    printf("\nReplacement Technique: LRU\n");
+    print_simulation_result(*LRU_simulation_result);
+
+    SimulationResult* LFU_simulation_result = simulate(input, "LFU");
+    printf("\nReplacement Technique: LFU\n");
+    print_simulation_result(*LFU_simulation_result);
+
+    SimulationResult* WS_simulation_result = simulate(input, "WS");
+    printf("\nReplacement Technique: WS\n");
+    print_simulation_result(*WS_simulation_result);
 
     printf("\n[SIMULATION END]\n\n");
 
@@ -44,18 +61,32 @@ void print_input(Input input)
 
 void print_simulation_result(SimulationResult simulation_result)
 {
+    int page_fault_count = 0;
     int i;
     for (i = 0; i < simulation_result.number_of_page_reference; i++)
     {
-        printf("[%d]\n", i);
-        printf("reference: %d\n", simulation_result.page_references[i]);
+        printf("[%4d] ", i + 1);
+        printf("%3d ref: ", simulation_result.page_references[i]);
+        if (simulation_result.page_fault_history[i] == 1)
+        {
+            printf("page fault ");
+            page_fault_count += 1;
+        }
+        else printf("           ");
         int j;
         for (j = 0; j < simulation_result.memory_history[i].number_of_page_frame; j++)
         {
-            printf(" %d | ", simulation_result.memory_history[i].page_frames[j]);
+            if (simulation_result.memory_history[i].page_frames[j] == -1)
+            {
+                printf("    |");
+            }
+            else
+            {
+                printf("%3d |", simulation_result.memory_history[i].page_frames[j]);
+            }
         }
-        printf("\n");
-        if (simulation_result.page_fault_history[i] == 1) printf("page fault!!\n");
+        printf("\t");
         printf("\n");
     }
+    printf("page fault count: %d\n", page_fault_count);
 }

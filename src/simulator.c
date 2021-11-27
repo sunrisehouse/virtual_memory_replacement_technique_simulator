@@ -7,9 +7,11 @@ int _MIN_find_victim_page_frame_index(Memory memory, Input input, int current_in
 int _FIFO_find_victim_page_frame_index(Memory memory, PageMap page_map_table[]);
 int _LRU_find_victim_page_frame_index(Memory memory, PageMap page_map_table[]);
 int _LFU_find_victim_page_frame_index(Memory memory, PageMap page_map_table[]);
+void _WS_increase_page_frame(Memory* memory);
+void _WS_decrease_page_frame(Memory* memory, PageMap page_map_table[], Input input, int time);
 int _find_empty_page_frame_index(Memory memory);
 void copy_memory(Memory* target, Memory* source);
-void _print_page_frame(Memory memory);
+void _print_memory(Memory memory);
 
 SimulationResult* simulate(Input input, const char* replacement_technique)
 {
@@ -28,8 +30,17 @@ SimulationResult* simulate(Input input, const char* replacement_technique)
     }
 
     Memory memory;
-    memory.number_of_page_frame = input.number_of_assigned_page_frame;
-    memory.page_frames = (int *) malloc(sizeof(int *) * input.number_of_assigned_page_frame);
+
+    if (replacement_technique == "WS")
+    {   
+        memory.number_of_page_frame = 0;
+        memory.page_frames = (int *) malloc(sizeof(int) * 0);
+    }
+    else
+    {
+        memory.number_of_page_frame = input.number_of_assigned_page_frame;
+        memory.page_frames = (int *) malloc(sizeof(int) * input.number_of_assigned_page_frame);
+    }
     PageMap page_map_table[input.number_of_page_in_process];
 
     // 초기화
@@ -49,12 +60,22 @@ SimulationResult* simulate(Input input, const char* replacement_technique)
     // 시뮬레이션
     for (i = 0; i < input.number_of_page_reference; i++)
     {
-        // _print_page_frame(memory, input.number_of_assigned_page_frame);
         int referenced_page_index = input.page_references[i];
+
+        if (replacement_technique == "WS")
+        {
+            _WS_decrease_page_frame(&memory, page_map_table, input, i);
+        }
+
         int page_frame_index = refer_page(&memory, page_map_table, referenced_page_index, i);
 
         if (page_frame_index == -1)
         {
+            if (replacement_technique == "WS")
+            {
+                _WS_increase_page_frame(&memory);
+            }
+
             // 빈 페이지 프레임 찾기
             int empty_page_frame_index = _find_empty_page_frame_index(memory);
         
@@ -77,7 +98,7 @@ SimulationResult* simulate(Input input, const char* replacement_technique)
                 assign_page(&memory, page_map_table, referenced_page_index, empty_page_frame_index, i);
             }    
         }
-
+        
         simulation_result->page_references[i] = referenced_page_index;
         if (page_frame_index == -1)
         {
@@ -94,7 +115,7 @@ SimulationResult* simulate(Input input, const char* replacement_technique)
 int _MIN_find_victim_page_frame_index(Memory memory, Input input, int current_index)
 {
     // printf("[time: %d]\n", current_index);
-    // _print_page_frame(page_frames, input.number_of_assigned_page_frame);
+    // _print_memory(page_frames, input.number_of_assigned_page_frame);
     int max_length = 0;
     int max_page_frame_index = -1;
     int i;
@@ -178,6 +199,57 @@ int _LFU_find_victim_page_frame_index(Memory memory, PageMap page_map_table[])
     return min_page_frame_index;
 }
 
+void _WS_increase_page_frame(Memory* memory)
+{
+    memory->number_of_page_frame += 1;
+    memory->page_frames = realloc(memory->page_frames, sizeof(int) * memory->number_of_page_frame);
+    memory->page_frames[memory->number_of_page_frame - 1] = -1;
+}
+
+void _WS_decrease_page_frame(Memory* memory, PageMap page_map_table[], Input input, int time)
+{
+    if (time > input.window_size)
+    {
+        int oldest_time = time - input.window_size - 1;
+
+        int oldest_page_index = input.page_references[oldest_time];
+
+        int need_decrease = 1;
+        int i;
+        for (i = oldest_time + 1; i <= time && i > 0 ; i++)
+        {
+            if (input.page_references[i] == oldest_page_index)
+            {
+                need_decrease = 0;
+                break;
+            }
+        }
+
+        if (need_decrease == 1)
+        {
+            int target_page_frame_index = page_map_table[oldest_page_index].assigned_page_frame_index;
+            memory->number_of_page_frame -= 1;
+            int* new_page_frames = (int*) malloc(sizeof(int) * memory->number_of_page_frame);
+
+            for (i = 0; i < memory->number_of_page_frame; i++)
+            {
+                if (i < target_page_frame_index)
+                {
+                    new_page_frames[i] = memory->page_frames[i];
+                }
+                else
+                {
+                    new_page_frames[i] = memory->page_frames[i + 1];
+                }
+                page_map_table[new_page_frames[i]].assigned_page_frame_index = i;
+            }
+
+            memory->page_frames = new_page_frames;
+            page_map_table[oldest_page_index].assigned_page_frame_index = -1;
+        }
+    } 
+}
+
 int _find_empty_page_frame_index(Memory memory)
 {
     int finded_index = -1;
@@ -206,7 +278,7 @@ void copy_memory(Memory* target, Memory* source)
     }
 }
 
-void _print_page_frame(Memory memory)
+void _print_memory(Memory memory)
 {
     int i;
     for (i = 0; i < memory.number_of_page_frame; i++)
