@@ -15,14 +15,12 @@ void _print_memory(Memory memory);
 
 SimulationResult* simulate(Input input, const char* replacement_technique)
 {
-    // result 초기화
     SimulationResult* simulation_result = (SimulationResult*) malloc(sizeof(SimulationResult));
     simulation_result->number_of_page_reference = input.number_of_page_reference;
     simulation_result->page_fault_history = (char *) malloc(sizeof(char) * input.number_of_page_reference);
     simulation_result->memory_history = (Memory *) malloc(sizeof(Memory) * input.number_of_page_reference);
     simulation_result->page_references = (int *) malloc(sizeof(int) * input.number_of_page_reference);
 
-    // 초기화
     int i;
     for (i = 0; i < input.number_of_assigned_page_frame; i++)
     {
@@ -43,7 +41,6 @@ SimulationResult* simulate(Input input, const char* replacement_technique)
     }
     PageMap page_map_table[input.number_of_page_in_process];
 
-    // 초기화
     for (i = 0; i < input.number_of_assigned_page_frame; i++)
     {
         memory.page_frames[i] = -1;
@@ -57,7 +54,6 @@ SimulationResult* simulate(Input input, const char* replacement_technique)
         page_map_table[i].reference_count = 0;
     }
 
-    // 시뮬레이션
     for (i = 0; i < input.number_of_page_reference; i++)
     {
         int referenced_page_index = input.page_references[i];
@@ -76,12 +72,10 @@ SimulationResult* simulate(Input input, const char* replacement_technique)
                 _WS_increase_page_frame(&memory);
             }
 
-            // 빈 페이지 프레임 찾기
             int empty_page_frame_index = _find_empty_page_frame_index(memory);
         
             if (empty_page_frame_index == -1)
             {
-                // replacement
                 int victim_page_frame_index;
                 if (strcmp(replacement_technique, "MIN") == 0) victim_page_frame_index = _MIN_find_victim_page_frame_index(memory, input, i);
                 else if (strcmp(replacement_technique, "FIFO") == 0) victim_page_frame_index = _FIFO_find_victim_page_frame_index(memory, page_map_table);
