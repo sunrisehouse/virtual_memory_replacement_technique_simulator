@@ -31,7 +31,7 @@ SimulationResult* simulate(Input input, const char* replacement_technique)
 
     Memory memory;
 
-    if (replacement_technique == "WS")
+    if (strcmp(replacement_technique, "WS") == 0)
     {   
         memory.number_of_page_frame = 0;
         memory.page_frames = (int *) malloc(sizeof(int) * 0);
@@ -62,7 +62,7 @@ SimulationResult* simulate(Input input, const char* replacement_technique)
     {
         int referenced_page_index = input.page_references[i];
 
-        if (replacement_technique == "WS")
+        if (strcmp(replacement_technique , "WS") == 0)
         {
             _WS_decrease_page_frame(&memory, page_map_table, input, i);
         }
@@ -71,7 +71,7 @@ SimulationResult* simulate(Input input, const char* replacement_technique)
 
         if (page_frame_index == -1)
         {
-            if (replacement_technique == "WS")
+            if (strcmp(replacement_technique, "WS") == 0)
             {
                 _WS_increase_page_frame(&memory);
             }
@@ -83,10 +83,10 @@ SimulationResult* simulate(Input input, const char* replacement_technique)
             {
                 // replacement
                 int victim_page_frame_index;
-                if (replacement_technique == "MIN") victim_page_frame_index = _MIN_find_victim_page_frame_index(memory, input, i);
-                else if (replacement_technique == "FIFO") victim_page_frame_index = _FIFO_find_victim_page_frame_index(memory, page_map_table);
-                else if (replacement_technique == "LRU") victim_page_frame_index = _LRU_find_victim_page_frame_index(memory, page_map_table);
-                else if (replacement_technique == "LFU") victim_page_frame_index = _LFU_find_victim_page_frame_index(memory, page_map_table);
+                if (strcmp(replacement_technique, "MIN") == 0) victim_page_frame_index = _MIN_find_victim_page_frame_index(memory, input, i);
+                else if (strcmp(replacement_technique, "FIFO") == 0) victim_page_frame_index = _FIFO_find_victim_page_frame_index(memory, page_map_table);
+                else if (strcmp(replacement_technique, "LRU") == 0) victim_page_frame_index = _LRU_find_victim_page_frame_index(memory, page_map_table);
+                else if (strcmp(replacement_technique, "LFU") == 0) victim_page_frame_index = _LFU_find_victim_page_frame_index(memory, page_map_table);
                 int victim_page_index = memory.page_frames[victim_page_frame_index];
 
 

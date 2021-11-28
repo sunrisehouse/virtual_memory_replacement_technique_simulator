@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "types.h"
 
 SimulationResult* simulate(Input input, const char* replacement_technique);
