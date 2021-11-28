@@ -114,8 +114,6 @@ SimulationResult* simulate(Input input, const char* replacement_technique)
 
 int _MIN_find_victim_page_frame_index(Memory memory, Input input, int current_index)
 {
-    // printf("[time: %d]\n", current_index);
-    // _print_memory(page_frames, input.number_of_assigned_page_frame);
     int max_length = 0;
     int max_page_frame_index = -1;
     int i;
@@ -137,8 +135,6 @@ int _MIN_find_victim_page_frame_index(Memory memory, Input input, int current_in
             max_page_frame_index = i;
         }
     }
-    // printf("victim: %d\n\n", max_page_frame_index);
-
     return max_page_frame_index;
 }
 
