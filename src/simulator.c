@@ -184,15 +184,23 @@ int _LFU_find_victim_page_frame_index(Memory memory, PageMap page_map_table[])
 {
     int min_reference_count = page_map_table[memory.page_frames[0]].reference_count;
     int min_page_frame_index = 0;
+    int min_reference_time = page_map_table[memory.page_frames[0]].reference_time;
     int i;
     for (i = 0; i < memory.number_of_page_frame; i++)
     {
         int page_index = memory.page_frames[i];
 
-        if (page_map_table[page_index].reference_count < min_reference_count)
+        if (
+            page_map_table[page_index].reference_count < min_reference_count
+            || (
+                page_map_table[page_index].reference_count == min_reference_count
+                && page_map_table[page_index].reference_time < min_reference_time
+            )
+        )
         {
             min_reference_count = page_map_table[page_index].reference_count;
             min_page_frame_index = i;
+            min_reference_time = page_map_table[page_index].reference_time;
         }
     }
 
