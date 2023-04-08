@@ -31,10 +31,10 @@ void _WS_decrease_page_frame(Memory* memory, PageMap page_map_table[], Input inp
 ```c
 typedef struct PageMap
 {
-int assigned_page_frame_index;
-int assigned_time;
-int reference_time;
-int reference_count;
+  int assigned_page_frame_index;
+  int assigned_time;
+  int reference_time;
+  int reference_count;
 } PageMap;
 ```
 Page Map Table 구현을 위한 구조체
@@ -42,8 +42,8 @@ Page Map Table 구현을 위한 구조체
 ```c
 typedef struct Memory
 {
-int number_of_page_frame;
-int* page_frames;
+  int number_of_page_frame;
+  int* page_frames;
 } Memory;
 ```
 Page Frame 에 접근하기 위한 Memory 구조체
@@ -51,10 +51,10 @@ Page Frame 에 접근하기 위한 Memory 구조체
 ```c
 typedef struct SimulationResult
 {
-int number_of_page_reference;
-int* page_references;
-Memory* memory_history;
-char* page_fault_history;
+  int number_of_page_reference;
+  int* page_references;
+  Memory* memory_history;
+  char* page_fault_history;
 } SimulationResult;
 ```
 각 시뮬레이션 결과를 저장할 Simulation Result 이다. 시간별로 page reference 와 memory, page fault 결과 를 저장했다.
@@ -63,56 +63,45 @@ char* page_fault_history;
 ```c
 for (i = 0; i < input.number_of_page_reference; i++)
 {
-int referenced_page_index = input.page_references[i];
-if (strcmp(replacement_technique , "WS") == 0)
-{
-_WS_decrease_page_frame(&memory, page_map_table, input, i);
-}
-int page_frame_index = refer_page(&memory, page_map_table,
-referenced_page_index, i);
-if (page_frame_index == -1)
-{
-if (strcmp(replacement_technique, "WS") == 0)
-{
-_WS_increase_page_frame(&memory);
-}
-// 빈 페이지 프레임 찾기
-int empty_page_frame_index = _find_empty_page_frame_index(memory);
-if (empty_page_frame_index == -1)
-{
-// replacement
-int victim_page_frame_index;
-if (strcmp(replacement_technique, "MIN") == 0)
-victim_page_frame_index = _MIN_find_victim_page_frame_index(memory, input, i);
-else if (strcmp(replacement_technique, "FIFO") == 0)
-victim_page_frame_index = _FIFO_find_victim_page_frame_index(memory,
-page_map_table);
-else if (strcmp(replacement_technique, "LRU") == 0)
-victim_page_frame_index = _LRU_find_victim_page_frame_index(memory,
-page_map_table);
-else if (strcmp(replacement_technique, "LFU") == 0)
-victim_page_frame_index = _LFU_find_victim_page_frame_index(memory,
-page_map_table);
-int victim_page_index = memory.page_frames[victim_page_frame_index];
-release_page(&memory, page_map_table, victim_page_index,
-victim_page_frame_index);
-assign_page(&memory, page_map_table, referenced_page_index,
-victim_page_frame_index, i);
-}
-else
-{
-assign_page(&memory, page_map_table, referenced_page_index,
-empty_page_frame_index, i);
-}
-}
-simulation_result->page_references[i] = referenced_page_index;
-if (page_frame_index == -1)
-{
-simulation_result->page_fault_history[i] = 1;
-}
-Memory record_memory;
-copy_memory(&record_memory, &memory);
-simulation_result->memory_history[i] = record_memory;
+  int referenced_page_index = input.page_references[i];
+  if (strcmp(replacement_technique , "WS") == 0)
+  {
+    _WS_decrease_page_frame(&memory, page_map_table, input, i);
+  }
+  int page_frame_index = refer_page(&memory, page_map_table, referenced_page_index, i);
+  if (page_frame_index == -1)
+  {
+    if (strcmp(replacement_technique, "WS") == 0)
+    {
+      _WS_increase_page_frame(&memory);
+    }
+    // 빈 페이지 프레임 찾기
+    int empty_page_frame_index = _find_empty_page_frame_index(memory);
+    if (empty_page_frame_index == -1)
+    {
+      // replacement
+      int victim_page_frame_index;
+      if (strcmp(replacement_technique, "MIN") == 0) victim_page_frame_index = _MIN_find_victim_page_frame_index(memory, input, i);
+      else if (strcmp(replacement_technique, "FIFO") == 0) victim_page_frame_index = _FIFO_find_victim_page_frame_index(memory, page_map_table);
+      else if (strcmp(replacement_technique, "LRU") == 0) victim_page_frame_index = _LRU_find_victim_page_frame_index(memory, page_map_table);
+      else if (strcmp(replacement_technique, "LFU") == 0) victim_page_frame_index = _LFU_find_victim_page_frame_index(memory, page_map_table);
+      int victim_page_index = memory.page_frames[victim_page_frame_index];
+      release_page(&memory, page_map_table, victim_page_index, victim_page_frame_index);
+      assign_page(&memory, page_map_table, referenced_page_index, victim_page_frame_index, i);
+    }
+    else
+    {
+      assign_page(&memory, page_map_table, referenced_page_index, empty_page_frame_index, i);
+    }
+  }
+  simulation_result->page_references[i] = referenced_page_index;
+  if (page_frame_index == -1)
+  {
+    simulation_result->page_fault_history[i] = 1;
+  }
+  Memory record_memory;
+  copy_memory(&record_memory, &memory);
+  simulation_result->memory_history[i] = record_memory;
 }
 ```
 1. page reference 에서 시간별로 reference 되는 page 를 찾는다. (referenced_page_index)
@@ -141,7 +130,7 @@ assign_page(&memory, page_map_table, referenced_page_index, victim_page_frame_in
 simulation_result->page_references[i] = referenced_page_index;
 if (page_frame_index == -1)
 {
-simulation_result->page_fault_history[i] = 1;
+  simulation_result->page_fault_history[i] = 1;
 }
 Memory record_memory;
 copy_memory(&record_memory, &memory);
@@ -151,26 +140,25 @@ simulation_result->memory_history[i] = record_memory;
 ```c
 int _MIN_find_victim_page_frame_index(Memory memory, Input input, int current_index)
 {
-int max_length = 0;
-int max_page_frame_index = -1;
-int i;
-for (i = 0; i < input.number_of_assigned_page_frame; i++)
-{
-7
-int page_index = memory.page_frames[i];
-int j;
-for (j = current_index + 1; j < input.number_of_page_reference; j++)
-{
-int referenced_page_index = input.page_references[j];
-if (referenced_page_index == page_index) break;
-}
-if (j > max_length)
-{
-max_length = j;
-max_page_frame_index = i;
-}
-}
-return max_page_frame_index;
+  int max_length = 0;
+  int max_page_frame_index = -1;
+  int i;
+  for (i = 0; i < input.number_of_assigned_page_frame; i++)
+  {
+    int page_index = memory.page_frames[i];
+    int j;
+    for (j = current_index + 1; j < input.number_of_page_reference; j++)
+    {
+      int referenced_page_index = input.page_references[j];
+      if (referenced_page_index == page_index) break;
+    }
+    if (j > max_length)
+    {
+      max_length = j;
+      max_page_frame_index = i;
+    }
+  }
+  return max_page_frame_index;
 }
 ```
 현재기준으로 가장 나중에 접근되는 page 를 찾는다. input 에 있는 page_references 들을 현재 이후로해서 다 찾아본다.
@@ -178,19 +166,19 @@ return max_page_frame_index;
 ```c
 int _FIFO_find_victim_page_frame_index(Memory memory, PageMap page_map_table[])
 {
-int min_assigned_time = page_map_table[memory.page_frames[0]].assigned_time;
-int min_page_frame_index = 0;
-int i;
-for (i = 0; i < memory.number_of_page_frame; i++)
-{
-int page_index = memory.page_frames[i];
-if (page_map_table[page_index].assigned_time < min_assigned_time)
-{
-min_assigned_time = page_map_table[page_index].assigned_time;
-min_page_frame_index = i;
-}
-}
-return min_page_frame_index;
+  int min_assigned_time = page_map_table[memory.page_frames[0]].assigned_time;
+  int min_page_frame_index = 0;
+  int i;
+  for (i = 0; i < memory.number_of_page_frame; i++)
+  {
+    int page_index = memory.page_frames[i];
+    if (page_map_table[page_index].assigned_time < min_assigned_time)
+    {
+      min_assigned_time = page_map_table[page_index].assigned_time;
+      min_page_frame_index = i;
+    }
+  }
+  return min_page_frame_index;
 }
 ```
 page frame 중에서 page map table 을 참조해서 가장 assigned time 이 빠른 page frame 를 찾는다.
@@ -199,19 +187,19 @@ page frame 중에서 page map table 을 참조해서 가장 assigned time 이 �
 ```c
 int _LRU_find_victim_page_frame_index(Memory memory, PageMap page_map_table[])
 {
-int min_reference_time = page_map_table[memory.page_frames[0]].reference_time;
-int min_page_frame_index = 0;
-int i;
-for (i = 0; i < memory.number_of_page_frame; i++)
-{
-int page_index = memory.page_frames[i];
-if (page_map_table[page_index].reference_time < min_reference_time)
-{
-min_reference_time = page_map_table[page_index].reference_time;
-min_page_frame_index = i;
-}
-}
-return min_page_frame_index;
+  int min_reference_time = page_map_table[memory.page_frames[0]].reference_time;
+  int min_page_frame_index = 0;
+  int i;
+  for (i = 0; i < memory.number_of_page_frame; i++)
+  {
+    int page_index = memory.page_frames[i];
+    if (page_map_table[page_index].reference_time < min_reference_time)
+    {
+      min_reference_time = page_map_table[page_index].reference_time;
+      min_page_frame_index = i;
+    }
+  }
+  return min_page_frame_index;
 }
 ```
 reference 된 시간이 가장 오래된 page frame 을 찾는다.
@@ -219,26 +207,26 @@ reference 된 시간이 가장 오래된 page frame 을 찾는다.
 ```c
 int _LFU_find_victim_page_frame_index(Memory memory, PageMap page_map_table[])
 {
-int min_reference_count = page_map_table[memory.page_frames[0]].reference_count;
-int min_page_frame_index = 0;
-int min_reference_time = page_map_table[memory.page_frames[0]].reference_time;
-int i;
-for (i = 0; i < memory.number_of_page_frame; i++)
-{
-int page_index = memory.page_frames[i];
-if (
-page_map_table[page_index].reference_count < min_reference_count || (
-page_map_table[page_index].reference_count == min_reference_count
-&& page_map_table[page_index].reference_time < min_reference_time
-)
-)
-{
-min_reference_count = page_map_table[page_index].reference_count;
-min_page_frame_index = i;
-min_reference_time = page_map_table[page_index].reference_time;
-}
-}
-return min_page_frame_index;
+  int min_reference_count = page_map_table[memory.page_frames[0]].reference_count;
+  int min_page_frame_index = 0;
+  int min_reference_time = page_map_table[memory.page_frames[0]].reference_time;
+  int i;
+  for (i = 0; i < memory.number_of_page_frame; i++)
+  {
+    int page_index = memory.page_frames[i];
+    if (
+      page_map_table[page_index].reference_count < min_reference_count || (
+        page_map_table[page_index].reference_count == min_reference_count
+        && page_map_table[page_index].reference_time < min_reference_time
+      )
+    )
+    {
+      min_reference_count = page_map_table[page_index].reference_count;
+      min_page_frame_index = i;
+      min_reference_time = page_map_table[page_index].reference_time;
+    }
+  }
+  return min_page_frame_index;
 }
 ```
 reference 횟수가 가장 적은 page frame 을 찾는다. 만약 reference 된 횟수가 같다면 reference time 을 이용해서 더 오래전에 접근된 page frame 을 찾는다.
@@ -246,50 +234,48 @@ reference 횟수가 가장 적은 page frame 을 찾는다. 만약 reference 된
 ```c
 void _WS_increase_page_frame(Memory* memory)
 {
-memory->number_of_page_frame += 1;
-memory->page_frames = realloc(memory->page_frames, sizeof(int) *
-memory->number_of_page_frame);
-memory->page_frames[memory->number_of_page_frame - 1] = -1;
+  memory->number_of_page_frame += 1;
+  memory->page_frames = realloc(memory->page_frames, sizeof(int) * memory->number_of_page_frame);
+  memory->page_frames[memory->number_of_page_frame - 1] = -1;
 }
-void _WS_decrease_page_frame(Memory* memory, PageMap page_map_table[], Input
-input, int time)
+
+void _WS_decrease_page_frame(Memory* memory, PageMap page_map_table[], Input input, int time)
 {
-if (time > input.window_size)
-{
-int oldest_time = time - input.window_size - 1;
-int oldest_page_index = input.page_references[oldest_time];
-int need_decrease = 1;
-int i;
-for (i = oldest_time + 1; i <= time && i > 0 ; i++)
-{
-if (input.page_references[i] == oldest_page_index)
-{
-need_decrease = 0;
-break;
-}
-}
-if (need_decrease == 1)
-{
-int target_page_frame_index =
-page_map_table[oldest_page_index].assigned_page_frame_index;
-memory->number_of_page_frame -= 1;
-int* new_page_frames = (int*) malloc(sizeof(int) * memory->number_of_page_frame);
-for (i = 0; i < memory->number_of_page_frame; i++)
-{
-if (i < target_page_frame_index)
-{
-new_page_frames[i] = memory->page_frames[i];
-}
-else
-{
-new_page_frames[i] = memory->page_frames[i + 1];
-}
-page_map_table[new_page_frames[i]].assigned_page_frame_index = i;
-}
-memory->page_frames = new_page_frames;
-page_map_table[oldest_page_index].assigned_page_frame_index = -1;
-}
-}
+  if (time > input.window_size)
+  {
+    int oldest_time = time - input.window_size - 1;
+    int oldest_page_index = input.page_references[oldest_time];
+    int need_decrease = 1;
+    int i;
+    for (i = oldest_time + 1; i <= time && i > 0 ; i++)
+    {
+      if (input.page_references[i] == oldest_page_index)
+      {
+        need_decrease = 0;
+        break;
+      }
+    }
+    if (need_decrease == 1)
+    {
+      int target_page_frame_index = page_map_table[oldest_page_index].assigned_page_frame_index;
+      memory->number_of_page_frame -= 1;
+      int* new_page_frames = (int*) malloc(sizeof(int) * memory->number_of_page_frame);
+      for (i = 0; i < memory->number_of_page_frame; i++)
+      {
+        if (i < target_page_frame_index)
+        {
+          new_page_frames[i] = memory->page_frames[i];
+        }
+        else
+        {
+          new_page_frames[i] = memory->page_frames[i + 1];
+        }
+        page_map_table[new_page_frames[i]].assigned_page_frame_index = i;
+      }
+      memory->page_frames = new_page_frames;
+      page_map_table[oldest_page_index].assigned_page_frame_index = -1;
+    }
+  }
 }
 ```
 increase 할 때 page frame 을 증가시킨다. decrease 할 때 window size 만큼 줄이는데 input 의 page references 를 참고해서 가장 오래된 page frame 을 찾아서 줄인다. 만약에 가장 오래된 page frame 이 그 이후에 또 참조됐다면 decrease 시키지 않는다.
@@ -721,14 +707,10 @@ page frame 의 수가 1개 이상임을 가정했다.
 - [ 9] 8 ref: page fault 5 | 6 | 7 | 8 |
 - [ 10] 9 ref: page fault 6 | 7 | 8 | 9 |
 -
-- [SIMULATION END]
-6. 출력물에 대한 설명
-가장 먼저 각 Replacement 기법이 표시된다.
-(MIN, FIFO, LRU, LFU, WS)
-각 Replacement 기법을 사용했을 경우 나오는 전체 page fault 수가 표시된다.
-(ex: page fault count: 10)
-그 다음은 시간별로 메모리 residence set 을 보여준다.
+- SIMULATION END
+- 
+## 6. 출력물에 대한 설명
+가장 먼저 각 Replacement 기법이 표시된다. (MIN, FIFO, LRU, LFU, WS) 각 Replacement 기법을 사용했을 경우 나오는 전체 page fault 수가 표시된다. (ex: page fault count: 10) 그 다음은 시간별로 메모리 residence set 을 보여준다.
 - [<시간>] < 접근페이지> ref: <page fault 유무> <memory residence set>
 - [ 10] 9 ref: page fault 6 | 7 | 8 | 9 |
-- 이면은 시간대 10에 9 라는 page 에 접근했고 page fault 가 났고 residence set 은 6, 7,
-8, 9 다 라는 것을 보여준다.
+- 이면은 시간대 10에 9 라는 page 에 접근했고 page fault 가 났고 residence set 은 6, 7, 8, 9 다 라는 것을 보여준다.
