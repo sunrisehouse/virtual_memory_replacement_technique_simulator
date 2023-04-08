@@ -537,7 +537,7 @@ page frame 의 수가 1개 이상임을 가정했다.
 - 9 3 6 16
 - 8 2 1 3 7 8 3 0 6 5 2 6 5 6 2 6
 - result
-- ## Virtual Memory Management Replacement Technique Simulation ##
+- Virtual Memory Management Replacement Technique Simulation
 -
 - MIN
 - page fault count: 9
