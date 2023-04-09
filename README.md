@@ -1,14 +1,14 @@
 # virtual memory replacement technique simulator
 
 ## 1. 개발 플랫폼, 컴파일, 실행 방법
-● 개발 플랫폼: Mac, Linux
-● Programming Language: C
-● Compiler: gcc
-● Compile 명령어: root directory 에서 make
+- 개발 플랫폼: Mac, Linux
+- Programming Language: C
+- Compiler: gcc
+- Compile 명령어: root directory 에서 make
   ```
   make
   ```
-● 프로그램 실행 방법: build directory 에서 만들어지는 ./build/vmrt_simulator 를 실행시키는데 뒤에 input file 경로를 argument 로 준다.
+- 프로그램 실행 방법: build directory 에서 만들어지는 ./build/vmrt_simulator 를 실행시키는데 뒤에 input file 경로를 argument 로 준다.
   ```
   ./build/vmrt_simulator ./inputs/test-input1.txt
   ```
